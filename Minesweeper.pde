@@ -13,16 +13,30 @@ void setup ()
     Interactive.make(this);
     
     //intialize buttons
+    mines = new ArrayList <MSButton> ();
+    
     buttons = new MSButton[NUM_ROWS][NUM_COLS];
     for(int r = 0; r < buttons.length; r++)
       for(int c = 0; c < buttons[r].length; c++)
           buttons[r][c] = new MSButton(r,c);
     
     setMines();
+    
+    for(int r = 0; r < buttons.length; r++)
+      for(int c = 0; c < buttons[r].length; c++)
+          buttons[r][c].setLabel(countMines(r,c));
+    
 }
 public void setMines()
 {
-    //your code
+  for(int i = 0; i < 10; i ++){
+    int ranRow = (int)(Math.random()*NUM_ROWS);
+    int ranCol = (int)(Math.random()*NUM_COLS);
+    if(!mines.contains(buttons[ranRow][ranCol]))
+      mines.add(buttons[ranRow][ranCol]);
+    else
+      i--;
+  }
 }
 
 public void draw ()
@@ -55,7 +69,8 @@ public int countMines(int row, int col)
     int numMines = 0;
     for(int r = row-1; r < row+1; r++)
       for(int c = col-1; c < col+1; c++)
-           return 1;
+         if(mines.contains(this))
+           numMines++;
     return numMines;
 }
 public class MSButton
@@ -75,25 +90,27 @@ public class MSButton
         y = myRow*height;
         myLabel = "";
         flagged = clicked = false;
-        Interactive.add( this ); // register it with the manager
+        Interactive.add(this); // register it with the manager
     }
 
     // called by manager
     public void mousePressed () 
     {
         clicked = true;
-        //your code here
+        if(countMines(myRow, myCol-1) == 0 && isValid(myRow,myCol-1))
+            buttons[myRow][myCol-1].mousePressed();
     }
+    
     public void draw () 
     {    
         if (flagged)
             fill(0);
-        // else if( clicked && mines.contains(this) ) 
-        //     fill(255,0,0);
+        else if(clicked && mines.contains(this)) 
+             fill(255,0,0);
         else if(clicked)
-            fill( 200 );
+            fill(200);
         else 
-            fill( 100 );
+            fill(100);
 
         rect(x, y, width, height);
         fill(0);
