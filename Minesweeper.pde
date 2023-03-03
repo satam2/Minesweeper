@@ -1,6 +1,6 @@
 import de.bezier.guido.*;
-public final static int NUM_ROWS = 8;
-public final static int NUM_COLS = 8;
+public final static int NUM_ROWS = 20;
+public final static int NUM_COLS = 20;
 private MSButton[][] buttons; //2d array of minesweeper buttons
 private ArrayList <MSButton> mines; //ArrayList of just the minesweeper buttons that are mined
 
@@ -21,14 +21,14 @@ void setup ()
     mines = new ArrayList <MSButton> ();
     setMines();
     
-    for(int r = 0; r < buttons.length;r++)
-      for(int c = 0; c < buttons[r].length; c++)
-        if(!mines.contains(buttons[r][c]))
-          buttons[r][c].setLabel(countMines(r,c));
+    //for(int r = 0; r < buttons.length;r++)
+    //  for(int c = 0; c < buttons[r].length; c++)
+    //    if(!mines.contains(buttons[r][c]))
+    //      buttons[r][c].setLabel(countMines(r,c));
 }
 public void setMines()
 {
-  for(int i = 0; i < NUM_ROWS/2; i ++){
+  for(int i = 0; i < NUM_ROWS*NUM_ROWS/4; i ++){
     int ranRow = (int)(Math.random()*NUM_ROWS);
     int ranCol = (int)(Math.random()*NUM_COLS);
     if(!mines.contains(buttons[ranRow][ranCol]))
@@ -41,21 +41,31 @@ public void setMines()
 public void draw ()
 {
     background(0);
-    if(isWon() == true)
+    if(isWon())
         displayWinningMessage();
 }
 public boolean isWon()
 {
-    //your code here
-    return false;
+    for(int r = 0; r <NUM_ROWS; r++)
+      for(int c = 0; c< NUM_COLS; c++)
+        if(!buttons[r][c].isClicked()&&!mines.contains(buttons[r][c]))
+          return false;
+    return true;
 }
 public void displayLosingMessage()
 {
-    text("you loser",200,200);
+    buttons[NUM_ROWS/2][NUM_COLS/2-2].setLabel("L");
+    buttons[NUM_ROWS/2][NUM_COLS/2-1].setLabel("O");
+    buttons[NUM_ROWS/2][NUM_COLS/2].setLabel("S");
+    buttons[NUM_ROWS/2][NUM_COLS/2+1].setLabel("E");
+    buttons[NUM_ROWS/2][NUM_COLS/2+2].setLabel("!");
 }
 public void displayWinningMessage()
 {
-    //your code here
+    buttons[NUM_ROWS/2][NUM_COLS/2-2].setLabel("W");
+    buttons[NUM_ROWS/2][NUM_COLS/2-1].setLabel("I");
+    buttons[NUM_ROWS/2][NUM_COLS/2].setLabel("N");
+    buttons[NUM_ROWS/2][NUM_COLS/2+1].setLabel("!");
 }
 public boolean isValid(int r, int c)
 {
@@ -71,6 +81,15 @@ public int countMines(int row, int col)
          if(isValid(r,c) && mines.contains(buttons[r][c]))
            numMines++;
       return numMines;
+}
+
+public int countZeros(int row, int col){
+    int numZeros = 0;
+    for(int r = row-1; r <= row+1; r++)
+      for(int c = col-1; c <= col+1; c++)
+         if(isValid(r,c) && countMines(r,c) == 0)
+           numZeros++;
+      return numZeros;
 }
 public class MSButton
 {
@@ -101,22 +120,19 @@ public class MSButton
           if(flagged == false)
             clicked = false;
         }
-        else if (mines.contains(buttons[myRow][myCol]))
+        else if (mines.contains(buttons[myRow][myCol])){
+          for(int i =0; i <mines.size();i++)
+              mines.get(i).clicked = true;
           displayLosingMessage();
-       else if(countMines(myRow,myCol)>0)
+        }
+       else if(countMines(myRow,myCol)>0){
          buttons[myRow][myCol].setLabel(countMines(myRow,myCol));
-       else{  
-           if(isValid(myRow,myCol-1) && !buttons[myRow][myCol-1].isClicked() && countMines(myRow,myCol-1) == 0)
-               buttons[myRow][myCol-1].mousePressed();
-               
-           if(isValid(myRow,myCol+1) && !buttons[myRow][myCol+1].isClicked() && countMines(myRow,myCol+1) == 0)
-               buttons[myRow][myCol+1].mousePressed();
-               
-           if(isValid(myRow-1,myCol) && !buttons[myRow-1][myCol].isClicked() && countMines(myRow-1,myCol) == 0)
-               buttons[myRow-1][myCol].mousePressed();
-        
-           if(isValid(myRow+1,myCol) && !buttons[myRow+1][myCol].isClicked() && countMines(myRow+1,myCol) == 0)
-               buttons[myRow+1][myCol].mousePressed();    
+       }
+       else{
+           for(int r = myRow-1; r <= myRow+1; r++)
+             for(int c = myCol-1; c <= myCol+1; c++)
+               if(isValid(r,c) && !buttons[r][c].isClicked())
+                   buttons[r][c].mousePressed();
        }
     }
     
