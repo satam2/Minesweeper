@@ -1,7 +1,6 @@
 body {
-    background-color: rgb(200,200,200);
-    color: rgb(0,0,0);
-    font-family: "Open Sans", sans-serif;
+    background-color: #d2b48c;
+    font-family: "Silkscreen", cursive;
     text-align: center;
 }
 
@@ -12,10 +11,10 @@ body {
 }
 
 header {
-	
+	color: white;
 }
 
 footer {
-	font-style: italic;
-	font-size: 90%;
+	color: white;
+  margin-top: 25px;
 }
